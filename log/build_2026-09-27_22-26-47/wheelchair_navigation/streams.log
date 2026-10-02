@@ -1,0 +1,44 @@
+[0.012s] Invoking command in '/home/db/wheelchair_ws/build/wheelchair_navigation': CMAKE_PREFIX_PATH=/home/db/wheelchair_ws/install/sllidar_ros2:/home/db/wheelchair_ws/install/wheelchair_navigation:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy /usr/bin/cmake /home/db/wheelchair_ws/src/wheelchair_navigation -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/db/wheelchair_ws/install/wheelchair_navigation
+[0.134s] -- The C compiler identification is GNU 13.3.0
+[0.231s] -- The CXX compiler identification is GNU 13.3.0
+[0.260s] -- Detecting C compiler ABI info
+[0.412s] -- Detecting C compiler ABI info - done
+[0.428s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.428s] -- Detecting C compile features
+[0.429s] -- Detecting C compile features - done
+[0.443s] -- Detecting CXX compiler ABI info
+[0.610s] -- Detecting CXX compiler ABI info - done
+[0.626s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.627s] -- Detecting CXX compile features
+[0.627s] -- Detecting CXX compile features - done
+[0.630s] -- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.840s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[0.955s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[1.151s] -- Configuring done (1.1s)
+[1.156s] -- Generating done (0.0s)
+[1.159s] -- Build files have been written to: /home/db/wheelchair_ws/build/wheelchair_navigation
+[1.168s] Invoked command in '/home/db/wheelchair_ws/build/wheelchair_navigation' returned '0': CMAKE_PREFIX_PATH=/home/db/wheelchair_ws/install/sllidar_ros2:/home/db/wheelchair_ws/install/wheelchair_navigation:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy /usr/bin/cmake /home/db/wheelchair_ws/src/wheelchair_navigation -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/db/wheelchair_ws/install/wheelchair_navigation
+[1.170s] Invoking command in '/home/db/wheelchair_ws/build/wheelchair_navigation': CMAKE_PREFIX_PATH=/home/db/wheelchair_ws/install/sllidar_ros2:/home/db/wheelchair_ws/install/wheelchair_navigation:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy /usr/bin/cmake --build /home/db/wheelchair_ws/build/wheelchair_navigation -- -j4 -l4
+[1.236s] Invoked command in '/home/db/wheelchair_ws/build/wheelchair_navigation' returned '0': CMAKE_PREFIX_PATH=/home/db/wheelchair_ws/install/sllidar_ros2:/home/db/wheelchair_ws/install/wheelchair_navigation:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy /usr/bin/cmake --build /home/db/wheelchair_ws/build/wheelchair_navigation -- -j4 -l4
+[1.238s] Invoking command in '/home/db/wheelchair_ws/build/wheelchair_navigation': CMAKE_PREFIX_PATH=/home/db/wheelchair_ws/install/sllidar_ros2:/home/db/wheelchair_ws/install/wheelchair_navigation:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy /usr/bin/cmake --install /home/db/wheelchair_ws/build/wheelchair_navigation
+[1.251s] -- Install configuration: ""
+[1.251s] -- Execute custom install script
+[1.252s] -- Symlinking: /home/db/wheelchair_ws/install/wheelchair_navigation/share/wheelchair_navigation/urdf/wheelchair.urdf
+[1.269s] -- Symlinking: /home/db/wheelchair_ws/install/wheelchair_navigation/share/wheelchair_navigation/launch/bringup.launch.py
+[1.286s] -- Symlinking: /home/db/wheelchair_ws/install/wheelchair_navigation/share/wheelchair_navigation/config/mapper_params_online.yaml
+[1.302s] -- Symlinking: /home/db/wheelchair_ws/install/wheelchair_navigation/share/ament_index/resource_index/package_run_dependencies/wheelchair_navigation
+[1.318s] -- Symlinking: /home/db/wheelchair_ws/install/wheelchair_navigation/share/ament_index/resource_index/parent_prefix_path/wheelchair_navigation
+[1.334s] -- Symlinking: /home/db/wheelchair_ws/install/wheelchair_navigation/share/wheelchair_navigation/environment/ament_prefix_path.sh
+[1.350s] -- Symlinking: /home/db/wheelchair_ws/install/wheelchair_navigation/share/wheelchair_navigation/environment/ament_prefix_path.dsv
+[1.365s] -- Symlinking: /home/db/wheelchair_ws/install/wheelchair_navigation/share/wheelchair_navigation/environment/path.sh
+[1.382s] -- Symlinking: /home/db/wheelchair_ws/install/wheelchair_navigation/share/wheelchair_navigation/environment/path.dsv
+[1.397s] -- Symlinking: /home/db/wheelchair_ws/install/wheelchair_navigation/share/wheelchair_navigation/local_setup.bash
+[1.412s] -- Symlinking: /home/db/wheelchair_ws/install/wheelchair_navigation/share/wheelchair_navigation/local_setup.sh
+[1.429s] -- Symlinking: /home/db/wheelchair_ws/install/wheelchair_navigation/share/wheelchair_navigation/local_setup.zsh
+[1.444s] -- Symlinking: /home/db/wheelchair_ws/install/wheelchair_navigation/share/wheelchair_navigation/local_setup.dsv
+[1.460s] -- Symlinking: /home/db/wheelchair_ws/install/wheelchair_navigation/share/wheelchair_navigation/package.dsv
+[1.477s] -- Symlinking: /home/db/wheelchair_ws/install/wheelchair_navigation/share/ament_index/resource_index/packages/wheelchair_navigation
+[1.493s] -- Symlinking: /home/db/wheelchair_ws/install/wheelchair_navigation/share/wheelchair_navigation/cmake/wheelchair_navigationConfig.cmake
+[1.509s] -- Symlinking: /home/db/wheelchair_ws/install/wheelchair_navigation/share/wheelchair_navigation/cmake/wheelchair_navigationConfig-version.cmake
+[1.525s] -- Symlinking: /home/db/wheelchair_ws/install/wheelchair_navigation/share/wheelchair_navigation/package.xml
+[1.544s] Invoked command in '/home/db/wheelchair_ws/build/wheelchair_navigation' returned '0': CMAKE_PREFIX_PATH=/home/db/wheelchair_ws/install/sllidar_ros2:/home/db/wheelchair_ws/install/wheelchair_navigation:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy /usr/bin/cmake --install /home/db/wheelchair_ws/build/wheelchair_navigation

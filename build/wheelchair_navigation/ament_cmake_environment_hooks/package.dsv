@@ -1,0 +1,4 @@
+source;share/wheelchair_navigation/local_setup.bash
+source;share/wheelchair_navigation/local_setup.dsv
+source;share/wheelchair_navigation/local_setup.sh
+source;share/wheelchair_navigation/local_setup.zsh

@@ -1,0 +1,6 @@
+Invoking command in '/home/db/wheelchair_ws/build/sllidar_ros2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake /home/db/wheelchair_ws/src/sllidar_ros2 -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/db/wheelchair_ws/install/sllidar_ros2
+Invoked command in '/home/db/wheelchair_ws/build/sllidar_ros2' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake /home/db/wheelchair_ws/src/sllidar_ros2 -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/db/wheelchair_ws/install/sllidar_ros2
+Invoking command in '/home/db/wheelchair_ws/build/sllidar_ros2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/db/wheelchair_ws/build/sllidar_ros2 -- -j4 -l4
+Invoked command in '/home/db/wheelchair_ws/build/sllidar_ros2' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --build /home/db/wheelchair_ws/build/sllidar_ros2 -- -j4 -l4
+Invoking command in '/home/db/wheelchair_ws/build/sllidar_ros2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /home/db/wheelchair_ws/build/sllidar_ros2
+Invoked command in '/home/db/wheelchair_ws/build/sllidar_ros2' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy /usr/bin/cmake --install /home/db/wheelchair_ws/build/sllidar_ros2

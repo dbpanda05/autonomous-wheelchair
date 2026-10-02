@@ -1,0 +1,30 @@
+slam_toolbox:
+  ros__parameters:
+    stack_size_to_use: 40000000
+    transform_publish_period: 0.02
+    # Add or update this queue setting:
+    message_filter_queue_size: 50
+    solver_plugin: solver_plugins::CeresSolver
+    ceres_linear_solver: SPARSE_NORMAL_CHOLESKY
+    ceres_preconditioner: JACOBI
+    ceres_trust_strategy: LEVENBERG_MARQUARDT
+    ceres_dogleg_type: TRADITIONAL_DOGLEG
+    ceres_loss_function: None
+
+    odom_frame: odom
+    map_frame: map
+    base_frame: base_link
+    scan_topic: /scan
+    use_map_saver: true
+    mode: mapping
+
+    transform_publish_period: 0.02
+    map_update_interval: 5.0
+    resolution: 0.05
+    max_laser_range: 12.0
+    minimum_travel_distance: 0.05
+    minimum_travel_heading: 0.05
+    scan_buffer_size: 10
+    scan_buffer_maximum_scan_distance: 10.0
+    link_match_minimum_response_fine: 0.1
+    link_scan_maximum_distance: 1.0

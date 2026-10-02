@@ -1,0 +1,1 @@
+/home/db/wheelchair_ws/build/wheelchair_navigation/ament_cmake_core/wheelchair_navigationConfig-version.cmake

@@ -211,9 +211,107 @@ stopBtn.addEventListener("click", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Voice recognition
+// Voice + Gemini speech-to-speech
 // ---------------------------------------------------------------------------
-const DESTINATIONS = ["kitchen", "classroom", "bedroom", "bathroom"];
+
+// ── Config: paste your Gemini API key here ──────────────────────────────────
+const GEMINI_API_KEY = "";   // get free key at aistudio.google.com
+// ────────────────────────────────────────────────────────────────────────────
+
+const DEST_LABELS = { kitchen: "Kitchen", classroom: "Classroom", bedroom: "Bedroom", bathroom: "Bathroom" };
+const DEST_NAMES  = Object.keys(DEST_LABELS);
+
+const GEMINI_SYSTEM = `You are the voice assistant for Saarthi, an autonomous wheelchair for children with disabilities.
+Available rooms: kitchen, classroom, bedroom, bathroom.
+The child speaks naturally — map their intent to one of these actions:
+  NAVIGATE:<room>   — go to that room
+  STOP              — halt immediately
+  STATUS            — tell them where the wheelchair is heading
+  UNKNOWN           — you couldn't understand
+
+Examples:
+  "I'm hungry"            → NAVIGATE:kitchen
+  "take me to eat"        → NAVIGATE:kitchen
+  "I want to study"       → NAVIGATE:classroom
+  "I need to sleep"       → NAVIGATE:bedroom
+  "bathroom please"       → NAVIGATE:bathroom
+  "stop stop stop"        → STOP
+  "wait here"             → STOP
+  "where are we going"    → STATUS
+  "what did I say"        → STATUS
+  "blah blah"             → UNKNOWN
+
+Reply with ONLY the action code — nothing else. No explanation.`;
+
+async function geminiIntent(transcript) {
+  if (!GEMINI_API_KEY) return null;
+  try {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: GEMINI_SYSTEM }] },
+          contents: [{ parts: [{ text: transcript }] }],
+          generationConfig: { maxOutputTokens: 20, temperature: 0 },
+        }),
+      }
+    );
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+    return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || null;
+  } catch (e) {
+    console.warn("Gemini error:", e);
+    return null;
+  }
+}
+
+function keywordFallback(transcript) {
+  if (/stop|wait|halt|help/i.test(transcript)) return "STOP";
+  if (/where|status|going/i.test(transcript)) return "STATUS";
+  const hit = DEST_NAMES.find(d => transcript.includes(d));
+  return hit ? "NAVIGATE:" + hit : "UNKNOWN";
+}
+
+async function handleTranscript(transcript) {
+  console.log("Transcript:", transcript);
+  showVoiceHint("Thinking…");
+
+  let action = await geminiIntent(transcript);
+  if (!action) action = keywordFallback(transcript);   // fallback if no API key
+
+  console.log("Intent:", action);
+
+  if (action.startsWith("NAVIGATE:")) {
+    const dest = action.split(":")[1].toLowerCase();
+    if (DEST_NAMES.includes(dest)) {
+      wsSend({ type: "goal", destination: dest });
+      const label = DEST_LABELS[dest];
+      setStatus("ok", "Going to " + label);
+      speak("Okay! Taking you to the " + label + " now.");
+      showVoiceHint("Going to " + label);
+    } else {
+      respondUnknown();
+    }
+  } else if (action === "STOP") {
+    wsSend({ type: "stop" });
+    setStatus("estop", "Stopped");
+    speak("Stopping now. You are safe.");
+    showVoiceHint("Stopped");
+  } else if (action === "STATUS") {
+    const dest = lastState?.status === "ok" ? "on my way" : "stopped";
+    speak("I am " + dest + ". Just say a room name to go somewhere.");
+    showVoiceHint("Told status");
+  } else {
+    respondUnknown();
+  }
+}
+
+function respondUnknown() {
+  speak("Sorry, I didn't understand. You can say kitchen, classroom, bedroom, or bathroom.");
+  showVoiceHint("Say a room name");
+}
 
 let recognition = null;
 
@@ -227,27 +325,20 @@ function initSpeech() {
   recognition = new SpeechRec();
   recognition.continuous     = false;
   recognition.interimResults = false;
-  recognition.lang           = "en-US";
+  recognition.lang           = "en-IN";   // Indian English — better accent match
 
   recognition.onresult = (evt) => {
     const transcript = evt.results[0][0].transcript.toLowerCase().trim();
-    console.log("Voice transcript:", transcript);
-    const matched = DESTINATIONS.find((d) => transcript.includes(d));
-    if (matched) {
-      wsSend({ type: "goal", destination: matched });
-      const label = matched.charAt(0).toUpperCase() + matched.slice(1);
-      setStatus("ok", "Navigating to " + label);
-      speak("Navigating to " + label);
-      showVoiceHint("Going to " + label);
-    } else {
-      showVoiceHint("Didn't catch that — try again");
-      speak("Didn't catch that, try again");
-    }
+    handleTranscript(transcript);
   };
 
   recognition.onerror = (evt) => {
     console.error("Speech error:", evt.error);
-    showVoiceHint("Couldn't hear — try again");
+    if (evt.error === "no-speech") {
+      showVoiceHint("Nothing heard — try again");
+    } else {
+      showVoiceHint("Mic error: " + evt.error);
+    }
   };
 
   recognition.onend = () => {

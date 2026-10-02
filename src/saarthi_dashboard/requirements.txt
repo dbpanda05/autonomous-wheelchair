@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+numpy
+Pillow
+pyserial
+# rclpy is installed via ROS 2 system packages (apt install ros-humble-rclpy), not pip

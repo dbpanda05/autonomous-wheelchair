@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Saarthi Dashboard</title>
+  <style>
+    /* ------------------------------------------------------------------ */
+    /* Reset & base                                                         */
+    /* ------------------------------------------------------------------ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0D1117;
+      --bg2:       #161b22;
+      --bg3:       #21262d;
+      --border:    #30363d;
+      --text:      #e6edf3;
+      --text-muted:#8b949e;
+      --green:     #3fb950;
+      --red:       #f85149;
+      --blue:      #58a6ff;
+      --accent:    #1f6feb;
+      --stop-bg:   #b91c1c;
+      --stop-hover:#dc2626;
+      --radius:    12px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 15px;
+      overflow: hidden;   /* no body scroll — inner sections scroll if needed */
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* App shell                                                            */
+    /* ------------------------------------------------------------------ */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;           /* dynamic viewport height — safe areas included */
+      max-width: 430px;
+      margin: 0 auto;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* 1. Status bar (fixed height)                                         */
+    /* ------------------------------------------------------------------ */
+    #status-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    #status-bar .battery {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    #status-bar .battery svg {
+      width: 22px; height: 22px;
+    }
+
+    #speed-text {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+
+    .status-label {
+      font-size: 13px;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    .status-ok    { color: var(--green); }
+
+    .status-error {
+      color: var(--red);
+      animation: pulse 1s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { opacity: 1; }
+      to   { opacity: 0.4; }
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* 2. Map canvas                                                        */
+    /* ------------------------------------------------------------------ */
+    #map-section {
+      flex: 0 0 35%;
+      background: #1a1f2e;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #map-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+    }
+
+    #map-overlay-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* 3. Destination grid                                                  */
+    /* ------------------------------------------------------------------ */
+    #dest-section {
+      flex: 1 1 0;
+      padding: 10px 10px 6px;
+      overflow-y: auto;
+    }
+
+    #dest-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      height: 100%;
+    }
+
+    .dest-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      min-height: 80px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.12s, opacity 0.12s, border-color 0.12s;
+      padding: 10px;
+    }
+
+    .dest-btn:active,
+    .dest-btn.pressed {
+      transform: scale(0.93);
+      opacity: 0.75;
+      border-color: var(--blue);
+    }
+
+    .dest-emoji {
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .dest-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: capitalize;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* 4. Stop button                                                       */
+    /* ------------------------------------------------------------------ */
+    #stop-section {
+      padding: 6px 10px;
+      flex-shrink: 0;
+    }
+
+    #stop-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--stop-bg);
+      border: none;
+      border-radius: var(--radius);
+      color: #fff;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.12s, background 0.12s;
+      letter-spacing: 0.05em;
+    }
+
+    #stop-btn:active {
+      transform: scale(0.96);
+      background: var(--stop-hover);
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* 5. Voice button (fixed bottom)                                      */
+    /* ------------------------------------------------------------------ */
+    #voice-section {
+      padding: 6px 10px max(10px, env(safe-area-inset-bottom));
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    #voice-btn {
+      width: 100%;
+      padding: 13px;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.12s, background 0.12s, box-shadow 0.2s;
+      touch-action: none;          /* prevent scroll-cancel on hold */
+    }
+
+    #voice-btn.recording {
+      background: #0969da;
+      box-shadow: 0 0 0 4px rgba(88, 166, 255, 0.35);
+      animation: mic-pulse 0.8s ease-in-out infinite alternate;
+    }
+
+    @keyframes mic-pulse {
+      from { box-shadow: 0 0 0 4px rgba(88, 166, 255, 0.2); }
+      to   { box-shadow: 0 0 0 10px rgba(88, 166, 255, 0.05); }
+    }
+
+    #voice-btn:active { transform: scale(0.97); }
+
+    #voice-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      opacity: 0;
+      transition: opacity 0.4s;
+      min-height: 18px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- 1. Status bar -->
+  <header id="status-bar">
+    <!-- Battery icon -->
+    <div class="battery">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <rect x="2" y="7" width="18" height="10" rx="2" ry="2"/>
+        <line x1="22" y1="11" x2="22" y2="13"/>
+        <rect x="4" y="9" width="12" height="6" rx="1" fill="currentColor" stroke="none"/>
+      </svg>
+      <span id="battery-text">—</span>
+    </div>
+
+    <span id="status-text" class="status-label status-ok">Connecting…</span>
+    <span id="speed-text">0.00 m/s</span>
+  </header>
+
+  <!-- 2. Map -->
+  <section id="map-section">
+    <canvas id="map-canvas"></canvas>
+  </section>
+
+  <!-- 3. Destinations -->
+  <section id="dest-section">
+    <div id="dest-grid">
+
+      <button class="dest-btn" data-dest="kitchen" aria-label="Navigate to Kitchen">
+        <span class="dest-emoji">🍳</span>
+        <span class="dest-label">Kitchen</span>
+      </button>
+
+      <button class="dest-btn" data-dest="classroom" aria-label="Navigate to Classroom">
+        <span class="dest-emoji">📚</span>
+        <span class="dest-label">Classroom</span>
+      </button>
+
+      <button class="dest-btn" data-dest="bedroom" aria-label="Navigate to Bedroom">
+        <span class="dest-emoji">🛏️</span>
+        <span class="dest-label">Bedroom</span>
+      </button>
+
+      <button class="dest-btn" data-dest="bathroom" aria-label="Navigate to Bathroom">
+        <span class="dest-emoji">🚿</span>
+        <span class="dest-label">Bathroom</span>
+      </button>
+
+    </div>
+  </section>
+
+  <!-- 4. Stop -->
+  <section id="stop-section">
+    <button id="stop-btn" aria-label="Emergency stop">✋ STOP</button>
+  </section>
+
+  <!-- 5. Voice -->
+  <section id="voice-section">
+    <button id="voice-btn" aria-label="Hold to speak destination">🎙 Hold to Speak</button>
+    <div id="voice-hint" aria-live="polite"></div>
+  </section>
+
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

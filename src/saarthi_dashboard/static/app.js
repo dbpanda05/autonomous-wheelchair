@@ -11,8 +11,10 @@
 // DOM references
 // ---------------------------------------------------------------------------
 const statusText   = document.getElementById("status-text");
+const statusPill   = document.getElementById("status-pill");
 const speedText    = document.getElementById("speed-text");
 const mapCanvas    = document.getElementById("map-canvas");
+const mapOverlay   = document.getElementById("map-overlay-msg");
 const stopBtn      = document.getElementById("stop-btn");
 const voiceBtn     = document.getElementById("voice-btn");
 const voiceHint    = document.getElementById("voice-hint");
@@ -90,6 +92,7 @@ function handleState(msg) {
   // Map
   if (msg.map_png && msg.map_png !== lastMapPng) {
     lastMapPng = msg.map_png;
+    if (mapOverlay) mapOverlay.style.display = "none";
     const img = new Image();
     img.onload = () => { mapImg = img; drawMap(); };
     img.src = "data:image/png;base64," + msg.map_png;
@@ -100,11 +103,11 @@ function handleState(msg) {
 
 function setStatus(statusKey, label) {
   statusText.textContent = label;
-  statusText.className = "status-label";
+  statusPill.className = "status-pill";
   if (statusKey === "ok") {
-    statusText.classList.add("status-ok");
-  } else if (statusKey !== "ok") {
-    statusText.classList.add("status-error");
+    statusPill.classList.add("ok");
+  } else {
+    statusPill.classList.add("error");
   }
 }
 

@@ -32,10 +32,10 @@ let lastMapPng = "";
 
 const STATUS_LABELS = {
   ok:        "Ready",
-  estop:     "STOPPED — E-Stop",
-  cliff:     "STOPPED — step ahead",
-  watchdog:  "STOPPED — watchdog",
-  obstacle:  "STOPPED — obstacle",
+  estop:     "E-Stop",
+  cliff:     "Step ahead",
+  watchdog:  "Watchdog",
+  obstacle:  "Obstacle",
 };
 
 // ---------------------------------------------------------------------------
@@ -103,12 +103,8 @@ function handleState(msg) {
 
 function setStatus(statusKey, label) {
   statusText.textContent = label;
-  statusPill.className = "status-pill";
-  if (statusKey === "ok") {
-    statusPill.classList.add("ok");
-  } else {
-    statusPill.classList.add("error");
-  }
+  statusPill.classList.remove("status-ok", "status-error");
+  statusPill.classList.add(statusKey === "ok" ? "status-ok" : "status-error");
 }
 
 // ---------------------------------------------------------------------------

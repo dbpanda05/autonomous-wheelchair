@@ -10,7 +10,7 @@ find_package(ament_cmake_python REQUIRED)
 
 # Install share directories (URDF, launch files, config files)
 install(
-  DIRECTORY urdf launch config
+  DIRECTORY urdf launch config worlds
   DESTINATION share/${PROJECT_NAME}
 )
 

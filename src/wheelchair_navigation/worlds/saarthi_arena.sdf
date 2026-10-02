@@ -1,0 +1,196 @@
+<?xml version="1.0" ?>
+<!--
+  saarthi_arena.sdf — Project Saarthi simulation world
+  Layout (7 m × 5 m room, robot starts at origin facing +X):
+
+      Y
+      ^
+  5m  |  [CLASSROOM]  |  [BEDROOM]
+      |               |
+      |    corridor   |
+      |               |
+  0m  |  [KITCHEN]    |  [BATHROOM]
+      +----------------> X
+     0m              7m
+
+  Destination coords fed into main.py DESTINATIONS:
+    kitchen:    x=1.5, y=0.8
+    classroom:  x=1.5, y=4.2
+    bedroom:    x=5.5, y=4.2
+    bathroom:   x=5.5, y=0.8
+-->
+<sdf version="1.9">
+  <world name="saarthi_arena">
+
+    <!-- ── Physics ──────────────────────────────────────────────────────── -->
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <!-- ── Required system plugins ──────────────────────────────────────── -->
+    <plugin filename="gz-sim-physics-system"
+            name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system"
+            name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system"
+            name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-sensors-system"
+            name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin filename="gz-sim-contact-system"
+            name="gz::sim::systems::Contact"/>
+
+    <!-- ── Lighting ─────────────────────────────────────────────────────── -->
+    <light name="sun" type="directional">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.9 0.9 0.9 1</diffuse>
+      <specular>0.3 0.3 0.3 1</specular>
+      <attenuation>
+        <range>1000</range><constant>0.9</constant>
+        <linear>0.01</linear><quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <!-- ── Ground ───────────────────────────────────────────────────────── -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="col">
+          <geometry><plane><normal>0 0 1</normal></plane></geometry>
+          <surface><friction><ode><mu>1.0</mu><mu2>1.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><plane><normal>0 0 1</normal><size>20 20</size></plane></geometry>
+          <material><ambient>0.85 0.85 0.85 1</ambient><diffuse>0.85 0.85 0.85 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         Outer walls  (thickness 0.15 m, height 1.2 m)
+         Arena: x=[0,7]  y=[0,5]  robot origin at (3.5, 2.5)
+         ══════════════════════════════════════════════════════════════════ -->
+
+    <!-- South wall  y=0 -->
+    <model name="wall_south">
+      <static>true</static><pose>3.5 0 0.6 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>7.3 0.15 1.2</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>7.3 0.15 1.2</size></box></geometry>
+          <material><ambient>0.6 0.6 0.6 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- North wall  y=5 -->
+    <model name="wall_north">
+      <static>true</static><pose>3.5 5 0.6 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>7.3 0.15 1.2</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>7.3 0.15 1.2</size></box></geometry>
+          <material><ambient>0.6 0.6 0.6 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- West wall  x=0 -->
+    <model name="wall_west">
+      <static>true</static><pose>0 2.5 0.6 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.15 5.3 1.2</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.15 5.3 1.2</size></box></geometry>
+          <material><ambient>0.6 0.6 0.6 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- East wall  x=7 -->
+    <model name="wall_east">
+      <static>true</static><pose>7 2.5 0.6 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.15 5.3 1.2</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.15 5.3 1.2</size></box></geometry>
+          <material><ambient>0.6 0.6 0.6 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ── Internal divider: vertical wall at x=3.5, with 1.2 m doorway gap ── -->
+    <!-- Lower segment: y=[0.15, 2.15] -->
+    <model name="divider_v_lower">
+      <static>true</static><pose>3.5 1.15 0.6 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.15 2.0 1.2</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.15 2.0 1.2</size></box></geometry>
+          <material><ambient>0.55 0.55 0.7 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+    <!-- Upper segment: y=[2.85, 4.85] -->
+    <model name="divider_v_upper">
+      <static>true</static><pose>3.5 3.85 0.6 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.15 2.0 1.2</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.15 2.0 1.2</size></box></geometry>
+          <material><ambient>0.55 0.55 0.7 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ── Zone markers (low flat boxes on the floor, coloured) ──────────── -->
+    <!-- Kitchen: cyan, x=[0.15,3.35] y=[0.15,2.35] -->
+    <model name="zone_kitchen">
+      <static>true</static><pose>1.75 1.25 0.01 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><box><size>3.2 2.2 0.02</size></box></geometry>
+          <material><ambient>0.0 0.6 0.6 0.25</ambient><diffuse>0.0 0.6 0.6 0.25</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Classroom: green, x=[0.15,3.35] y=[2.65,4.85] -->
+    <model name="zone_classroom">
+      <static>true</static><pose>1.75 3.75 0.01 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><box><size>3.2 2.2 0.02</size></box></geometry>
+          <material><ambient>0.0 0.6 0.0 0.25</ambient><diffuse>0.0 0.6 0.0 0.25</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Bedroom: purple, x=[3.65,6.85] y=[2.65,4.85] -->
+    <model name="zone_bedroom">
+      <static>true</static><pose>5.25 3.75 0.01 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><box><size>3.2 2.2 0.02</size></box></geometry>
+          <material><ambient>0.5 0.0 0.6 0.25</ambient><diffuse>0.5 0.0 0.6 0.25</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Bathroom: blue, x=[3.65,6.85] y=[0.15,2.35] -->
+    <model name="zone_bathroom">
+      <static>true</static><pose>5.25 1.25 0.01 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><box><size>3.2 2.2 0.02</size></box></geometry>
+          <material><ambient>0.0 0.3 0.9 0.25</ambient><diffuse>0.0 0.3 0.9 0.25</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+  </world>
+</sdf>

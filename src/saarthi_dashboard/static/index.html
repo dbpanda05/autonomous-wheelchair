@@ -1,464 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Saarthi</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:        #07090F;
-      --surface:   #0D1321;
-      --card:      #111827;
-      --border:    #1C2A3E;
-      --border2:   #253448;
-
-      --text:      #EDF2F7;
-      --text2:     #8BA0B8;
-      --text3:     #4E6480;
-
-      --blue:      #3B82F6;
-      --blue-dim:  rgba(59,130,246,0.12);
-      --green:     #22C55E;
-      --red:       #EF4444;
-      --red-dim:   rgba(239,68,68,0.12);
-      --amber:     #F59E0B;
-
-      --c-kitchen:   #F97316;
-      --c-classroom: #14B8A6;
-      --c-bedroom:   #A855F7;
-      --c-bathroom:  #3B82F6;
-
-      --radius-sm: 10px;
-      --radius:    14px;
-      --radius-lg: 18px;
+    body { font-family: 'Inter', sans-serif; }
+    .map-grid {
+      background-size: 40px 40px;
+      background-image:
+        linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px);
     }
-
-    html, body {
-      height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Inter', -apple-system, sans-serif;
-      font-size: 15px;
-      -webkit-font-smoothing: antialiased;
-      overflow: hidden;
+    #map-canvas { display: block; width: 100%; height: 100%; }
+    .status-ok   { background: rgba(34,197,94,0.12) !important; color: #4ade80 !important; border-color: rgba(34,197,94,0.25) !important; }
+    .status-error{ background: rgba(239,68,68,0.12) !important; color: #f87171 !important; border-color: rgba(239,68,68,0.25) !important; }
+    .status-ok   .status-dot { background:#22c55e; box-shadow:0 0 6px #22c55e; animation:none; }
+    .status-error .status-dot{ background:#ef4444; box-shadow:0 0 6px #ef4444; }
+    @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.35} }
+    .status-error .status-dot { animation: pulse-dot .9s ease-in-out infinite; }
+    @keyframes mic-ring {
+      from { box-shadow: 0 0 0 0 rgba(59,130,246,.5); }
+      to   { box-shadow: 0 0 0 8px rgba(59,130,246,0); }
     }
-
-    #app {
-      display: flex;
-      flex-direction: column;
-      height: 100dvh;
-      max-width: 430px;
-      margin: 0 auto;
-      padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
-    }
-
-    /* ── Header ─────────────────────────────────────────────────── */
-    #header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 16px 10px;
-      flex-shrink: 0;
-    }
-
-    .app-name {
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      color: var(--text);
-    }
-
-    .app-name span {
-      color: var(--blue);
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .status-pill {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 10px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text2);
-      transition: all 0.3s;
-    }
-
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--text3);
-      transition: background 0.3s;
-      flex-shrink: 0;
-    }
-
-    .status-pill.ok    .status-dot { background: var(--green); box-shadow: 0 0 6px var(--green); }
-    .status-pill.ok                { color: var(--green); border-color: rgba(34,197,94,0.25); background: rgba(34,197,94,0.06); }
-    .status-pill.error .status-dot { background: var(--red); box-shadow: 0 0 6px var(--red); animation: blink 0.9s ease-in-out infinite alternate; }
-    .status-pill.error             { color: var(--red); border-color: rgba(239,68,68,0.25); background: rgba(239,68,68,0.06); }
-
-    @keyframes blink { from { opacity:1 } to { opacity:0.35 } }
-
-    .speed-badge {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text2);
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 5px 10px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    /* ── Map ─────────────────────────────────────────────────────── */
-    #map-wrap {
-      margin: 0 14px 12px;
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      border: 1px solid var(--border);
-      background: #0A1020;
-      position: relative;
-      flex: 0 0 34%;
-    }
-
-    #map-canvas {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-
-    #map-label {
-      position: absolute;
-      top: 10px;
-      left: 12px;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--text3);
-      pointer-events: none;
-    }
-
-    #map-overlay-msg {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      color: var(--text3);
-      pointer-events: none;
-    }
-
-    /* ── Destinations ────────────────────────────────────────────── */
-    #dest-section {
-      flex: 1 1 0;
-      padding: 0 14px 10px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .section-title {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: var(--text3);
-      padding: 0 2px;
-      flex-shrink: 0;
-    }
-
-    #dest-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      flex: 1 1 0;
-    }
-
-    .dest-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: flex-end;
-      padding: 14px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      cursor: pointer;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.12s, opacity 0.12s, border-color 0.2s;
-      min-height: 0;
-    }
-
-    .dest-btn::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-
-    .dest-btn[data-dest="kitchen"]::before   { background: radial-gradient(circle at top right, rgba(249,115,22,0.15), transparent 70%); }
-    .dest-btn[data-dest="classroom"]::before { background: radial-gradient(circle at top right, rgba(20,184,166,0.15), transparent 70%); }
-    .dest-btn[data-dest="bedroom"]::before   { background: radial-gradient(circle at top right, rgba(168,85,247,0.15), transparent 70%); }
-    .dest-btn[data-dest="bathroom"]::before  { background: radial-gradient(circle at top right, rgba(59,130,246,0.15), transparent 70%); }
-
-    .dest-btn:hover::before,
-    .dest-btn.pressed::before { opacity: 1; }
-
-    .dest-btn:active,
-    .dest-btn.pressed {
-      transform: scale(0.95);
-      opacity: 0.85;
-    }
-
-    .dest-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      margin-bottom: 10px;
-      flex-shrink: 0;
-    }
-
-    .dest-btn[data-dest="kitchen"]   .dest-icon { background: rgba(249,115,22,0.15); }
-    .dest-btn[data-dest="classroom"] .dest-icon { background: rgba(20,184,166,0.15); }
-    .dest-btn[data-dest="bedroom"]   .dest-icon { background: rgba(168,85,247,0.15); }
-    .dest-btn[data-dest="bathroom"]  .dest-icon { background: rgba(59,130,246,0.15); }
-
-    .dest-name {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text);
-      line-height: 1;
-    }
-
-    .dest-sub {
-      font-size: 11px;
-      color: var(--text3);
-      margin-top: 3px;
-    }
-
-    .dest-arrow {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      font-size: 16px;
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-    .dest-btn[data-dest="kitchen"]   .dest-arrow { color: var(--c-kitchen); }
-    .dest-btn[data-dest="classroom"] .dest-arrow { color: var(--c-classroom); }
-    .dest-btn[data-dest="bedroom"]   .dest-arrow { color: var(--c-bedroom); }
-    .dest-btn[data-dest="bathroom"]  .dest-arrow { color: var(--c-bathroom); }
-
-    .dest-btn:hover .dest-arrow,
-    .dest-btn.pressed .dest-arrow { opacity: 1; }
-
-    /* ── Stop ───────────────────────────────────────────────────── */
-    #stop-section {
-      padding: 0 14px 8px;
-      flex-shrink: 0;
-    }
-
-    #stop-btn {
-      width: 100%;
-      padding: 15px;
-      background: var(--red);
-      border: none;
-      border-radius: var(--radius);
-      color: #fff;
-      font-family: inherit;
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      transition: transform 0.1s, filter 0.1s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    #stop-btn:active {
-      transform: scale(0.97);
-      filter: brightness(1.15);
-    }
-
-    .stop-icon {
-      width: 18px;
-      height: 18px;
-      background: rgba(255,255,255,0.3);
-      border-radius: 4px;
-      display: inline-block;
-    }
-
-    /* ── Voice ──────────────────────────────────────────────────── */
-    #voice-section {
-      padding: 0 14px max(12px, env(safe-area-inset-bottom));
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-    }
-
-    #voice-btn {
-      width: 100%;
-      padding: 14px;
-      background: var(--card);
-      border: 1px solid var(--border2);
-      border-radius: var(--radius);
-      color: var(--text);
-      font-family: inherit;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      transition: transform 0.1s, background 0.2s, border-color 0.2s, box-shadow 0.2s;
-      touch-action: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .mic-icon {
-      width: 18px;
-      height: 18px;
-      background: var(--blue);
-      border-radius: 50%;
-      flex-shrink: 0;
-      transition: background 0.2s;
-    }
-
-    #voice-btn.recording {
-      background: rgba(59,130,246,0.1);
-      border-color: var(--blue);
-      box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
-    }
-
-    #voice-btn.recording .mic-icon {
-      background: var(--blue);
-      animation: mic-pulse 0.7s ease-in-out infinite alternate;
-    }
-
-    @keyframes mic-pulse {
-      from { box-shadow: 0 0 0 0 rgba(59,130,246,0.5); }
-      to   { box-shadow: 0 0 0 6px rgba(59,130,246,0); }
-    }
-
-    #voice-btn:active { transform: scale(0.98); }
-
-    #voice-hint {
-      font-size: 12px;
-      color: var(--text3);
-      opacity: 0;
-      transition: opacity 0.3s;
-      min-height: 16px;
-      text-align: center;
-    }
+    #voice-btn.recording { border-color: #3b82f6 !important; background: rgba(59,130,246,.08) !important; }
+    #voice-btn.recording .mic-dot { animation: mic-ring .7s ease-in-out infinite; }
   </style>
 </head>
-<body>
-<div id="app">
+<body class="bg-gray-950 flex items-center justify-center min-h-screen p-4">
 
-  <!-- Header -->
-  <header id="header">
-    <div class="app-name">Saart<span>hi</span></div>
-    <div class="header-right">
-      <div class="speed-badge" id="speed-text">0.00 m/s</div>
-      <div class="status-pill" id="status-pill">
-        <div class="status-dot"></div>
-        <span id="status-text">Connecting</span>
+  <!-- Phone shell -->
+  <div class="bg-[#0B0F19] w-full max-w-[400px] rounded-[2.5rem] shadow-2xl border border-gray-800/60 overflow-hidden flex flex-col" style="height:850px">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 pt-8 pb-3 flex-shrink-0">
+      <div class="text-2xl font-bold tracking-tight text-white">Saar<span class="text-blue-500">thi</span></div>
+      <div class="flex items-center space-x-2 text-xs font-semibold flex-shrink-0">
+        <div class="bg-gray-800/80 text-gray-300 px-3 py-1.5 rounded-full border border-gray-700/50 whitespace-nowrap" id="speed-text">0 m/s</div>
+        <div id="status-pill" class="status-error px-3 py-1.5 rounded-full border border-red-900/50 flex items-center space-x-1.5 whitespace-nowrap">
+          <span class="status-dot w-2 h-2 rounded-full flex-shrink-0"></span>
+          <span id="status-text">Connecting</span>
+        </div>
       </div>
     </div>
-  </header>
 
-  <!-- Map -->
-  <div id="map-wrap">
-    <canvas id="map-canvas"></canvas>
-    <div id="map-label">Live Map</div>
-    <div id="map-overlay-msg">Waiting for map…</div>
+    <!-- Scrollable body -->
+    <div class="flex-1 overflow-y-auto px-6 space-y-5 pb-4" style="min-height:0">
+
+      <!-- Map -->
+      <div class="space-y-2">
+        <h2 class="text-xs font-bold text-gray-500 tracking-widest uppercase">Live Map</h2>
+        <div class="relative w-full rounded-3xl border border-gray-800 overflow-hidden map-grid bg-gray-900" style="height:240px">
+          <canvas id="map-canvas"></canvas>
+          <div id="map-overlay-msg" class="absolute inset-0 flex items-center justify-center text-xs text-gray-600 pointer-events-none">
+            Waiting for map…
+          </div>
+        </div>
+      </div>
+
+      <!-- Destinations -->
+      <div class="space-y-2">
+        <h2 class="text-xs font-bold text-gray-500 tracking-widest uppercase">Navigate To</h2>
+        <div class="grid grid-cols-2 gap-3">
+
+          <button data-dest="kitchen" aria-label="Navigate to Kitchen"
+            class="dest-btn bg-[#131824] hover:bg-[#1a2133] border border-gray-800/60 rounded-2xl p-4 text-left flex flex-col justify-between transition-all active:scale-95 h-28">
+            <div class="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-lg">🍳</div>
+            <div>
+              <div class="text-white font-semibold text-sm">Kitchen</div>
+              <div class="text-gray-500 text-xs mt-0.5">Room 1</div>
+            </div>
+          </button>
+
+          <button data-dest="classroom" aria-label="Navigate to Classroom"
+            class="dest-btn bg-[#131824] hover:bg-[#1a2133] border border-gray-800/60 rounded-2xl p-4 text-left flex flex-col justify-between transition-all active:scale-95 h-28">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-lg">📚</div>
+            <div>
+              <div class="text-white font-semibold text-sm">Classroom</div>
+              <div class="text-gray-500 text-xs mt-0.5">Room 2</div>
+            </div>
+          </button>
+
+          <button data-dest="bedroom" aria-label="Navigate to Bedroom"
+            class="dest-btn bg-[#131824] hover:bg-[#1a2133] border border-gray-800/60 rounded-2xl p-4 text-left flex flex-col justify-between transition-all active:scale-95 h-28">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-lg">🛏️</div>
+            <div>
+              <div class="text-white font-semibold text-sm">Bedroom</div>
+              <div class="text-gray-500 text-xs mt-0.5">Room 3</div>
+            </div>
+          </button>
+
+          <button data-dest="bathroom" aria-label="Navigate to Bathroom"
+            class="dest-btn bg-[#131824] hover:bg-[#1a2133] border border-gray-800/60 rounded-2xl p-4 text-left flex flex-col justify-between transition-all active:scale-95 h-28">
+            <div class="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center text-lg">🚿</div>
+            <div>
+              <div class="text-white font-semibold text-sm">Bathroom</div>
+              <div class="text-gray-500 text-xs mt-0.5">Room 4</div>
+            </div>
+          </button>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Sticky bottom actions -->
+    <div class="px-6 pb-8 pt-3 flex-shrink-0 space-y-3" style="background:linear-gradient(to bottom, transparent, #0B0F19 30%)">
+
+      <button id="stop-btn" aria-label="Emergency stop"
+        class="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-white font-bold py-4 rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center space-x-3"
+        style="box-shadow:0 8px 30px rgba(220,38,38,0.25)">
+        <div class="w-4 h-4 bg-white/20 rounded-sm flex-shrink-0"></div>
+        <span class="tracking-wide text-[15px]">EMERGENCY STOP</span>
+      </button>
+
+      <button id="voice-btn" aria-label="Hold to speak destination" touch-action="none"
+        class="w-full bg-[#131824] border border-gray-800 text-white font-semibold py-4 rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center space-x-3">
+        <div class="mic-dot w-3.5 h-3.5 bg-blue-500 rounded-full flex-shrink-0" style="box-shadow:0 0 10px rgba(59,130,246,.5)"></div>
+        <span class="text-[15px]">Hold to Speak</span>
+      </button>
+
+      <div id="voice-hint" class="text-center text-xs text-gray-600 min-h-[16px] opacity-0 transition-opacity duration-300" aria-live="polite"></div>
+    </div>
+
   </div>
 
-  <!-- Destinations -->
-  <section id="dest-section">
-    <div class="section-title">Navigate to</div>
-    <div id="dest-grid">
-
-      <button class="dest-btn" data-dest="kitchen" aria-label="Navigate to Kitchen">
-        <div class="dest-icon">🍳</div>
-        <div class="dest-name">Kitchen</div>
-        <div class="dest-sub">Room 1</div>
-        <span class="dest-arrow">→</span>
-      </button>
-
-      <button class="dest-btn" data-dest="classroom" aria-label="Navigate to Classroom">
-        <div class="dest-icon">📚</div>
-        <div class="dest-name">Classroom</div>
-        <div class="dest-sub">Room 2</div>
-        <span class="dest-arrow">→</span>
-      </button>
-
-      <button class="dest-btn" data-dest="bedroom" aria-label="Navigate to Bedroom">
-        <div class="dest-icon">🛏️</div>
-        <div class="dest-name">Bedroom</div>
-        <div class="dest-sub">Room 3</div>
-        <span class="dest-arrow">→</span>
-      </button>
-
-      <button class="dest-btn" data-dest="bathroom" aria-label="Navigate to Bathroom">
-        <div class="dest-icon">🚿</div>
-        <div class="dest-name">Bathroom</div>
-        <div class="dest-sub">Room 4</div>
-        <span class="dest-arrow">→</span>
-      </button>
-
-    </div>
-  </section>
-
-  <!-- Stop -->
-  <section id="stop-section">
-    <button id="stop-btn" aria-label="Emergency stop">
-      <span class="stop-icon" aria-hidden="true"></span>
-      EMERGENCY STOP
-    </button>
-  </section>
-
-  <!-- Voice -->
-  <section id="voice-section">
-    <button id="voice-btn" aria-label="Hold to speak destination">
-      <div class="mic-icon" aria-hidden="true"></div>
-      Hold to Speak
-    </button>
-    <div id="voice-hint" aria-live="polite"></div>
-  </section>
-
-</div>
 <script src="/static/app.js"></script>
 </body>
 </html>

@@ -173,6 +173,19 @@ def generate_launch_description():
         output='screen',
     )
 
+    # ── 5. Static TF: alias Gazebo-scoped lidar frame → URDF lidar_link ─────────
+    # Gazebo Harmonic names sensor frames as "{model}/{link}/{sensor}"; SLAM
+    # expects the plain URDF name.  This identity transform bridges the gap.
+    lidar_frame_alias = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        arguments=['0', '0', '0', '0', '0', '0',
+                   'lidar_link',
+                   'wheelchair/base_footprint/rplidar_a1'],
+        parameters=[{'use_sim_time': True}],
+        output='screen',
+    )
+
     return LaunchDescription([
         declare_mode,
         declare_map,
@@ -180,5 +193,6 @@ def generate_launch_description():
         rsp,
         spawn,
         bridge,
+        lidar_frame_alias,
         OpaqueFunction(function=_conditional_nodes),
     ])

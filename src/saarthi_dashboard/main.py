@@ -37,10 +37,11 @@ STATIC_DIR = Path(__file__).parent / "static"
 # Destinations — edit x/y/theta after saving your real map
 # ---------------------------------------------------------------------------
 DESTINATIONS: dict[str, dict] = {
-    "kitchen":   {"x":  2.0,  "y":  1.0,  "theta": 0.0},
-    "classroom": {"x": -1.5,  "y":  2.0,  "theta": 1.57},
-    "bedroom":   {"x":  3.0,  "y": -1.0,  "theta": 3.14},
-    "bathroom":  {"x":  0.5,  "y": -2.5,  "theta": -1.57},
+    # Sim arena coords (saarthi_arena.sdf); update after real map save
+    "kitchen":   {"x": 1.5, "y": 0.8, "theta": 0.0},
+    "classroom": {"x": 1.5, "y": 4.2, "theta": 0.0},
+    "bedroom":   {"x": 5.5, "y": 4.2, "theta": 3.14},
+    "bathroom":  {"x": 5.5, "y": 0.8, "theta": -1.57},
 }
 
 # ---------------------------------------------------------------------------

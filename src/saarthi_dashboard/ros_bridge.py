@@ -195,9 +195,15 @@ class RosBridge:
             from std_msgs.msg import String
 
             node.create_subscription(OccupancyGrid, "/map", self._on_map, 1)
+            # Real hardware: AMCL pose; Simulation: SLAM Toolbox pose; both same type
             node.create_subscription(
                 PoseWithCovarianceStamped, "/amcl_pose", self._on_amcl_pose, 10
             )
+            node.create_subscription(
+                PoseWithCovarianceStamped, "/pose", self._on_amcl_pose, 10
+            )
+            from nav_msgs.msg import Odometry
+            node.create_subscription(Odometry, "/odom", self._on_odom, 10)
             node.create_subscription(Twist, "/cmd_vel", self._on_cmd_vel, 10)
             node.create_subscription(String, "/esp32_status", self._on_esp32_status, 10)
 
@@ -246,6 +252,23 @@ class RosBridge:
     def _on_cmd_vel(self, msg) -> None:
         with self._lock:
             self._state["speed"] = msg.linear.x
+
+    def _on_odom(self, msg) -> None:
+        """Fallback pose from odometry when no AMCL/SLAM pose is available."""
+        try:
+            p = msg.pose.pose
+            theta = _quaternion_to_yaw(
+                p.orientation.x, p.orientation.y,
+                p.orientation.z, p.orientation.w,
+            )
+            with self._lock:
+                # Only update from odom if SLAM/AMCL haven't published yet
+                if self._state["pose"]["x"] == 0.0 and self._state["pose"]["y"] == 0.0:
+                    self._state["pose"] = {"x": p.position.x, "y": p.position.y, "theta": theta}
+            with self._lock:
+                self._state["speed"] = msg.twist.twist.linear.x
+        except Exception as exc:
+            log.error("_on_odom error: %s", exc)
 
     def _on_esp32_status(self, msg) -> None:
         try:
